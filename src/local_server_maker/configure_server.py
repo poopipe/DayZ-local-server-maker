@@ -1,4 +1,5 @@
 import os
+from collections.abc import Callable
 from pathlib import Path
 from typing import Literal, TypedDict
 
@@ -9,6 +10,7 @@ from local_server_maker.config import (
     get_config,
     write_config,
 )
+from local_server_maker.globals_xml import write_login_logout_times
 from local_server_maker.links import (
     get_mod_directory_name,
     is_reparse_point,
@@ -16,7 +18,13 @@ from local_server_maker.links import (
     remove_mod_directory,
 )
 from local_server_maker.mod_path import generate_mod_directory
+from local_server_maker.profile_server import start_server_for_profile
 from local_server_maker.run import refresh_installed_mods, rewrite_launch_files
+from local_server_maker.supported_mods import (
+    SUPPORTED_MODS,
+    SupportedMod,
+    configure_supported_mod,
+)
 from local_server_maker.workshop import WorkshopSearch, ask_pick, bind_workshop_search
 
 OPTIONS = (
@@ -35,21 +43,37 @@ class Installed(TypedDict):
     label: str
 
 
+def generate_configure_options(
+    supported: tuple[SupportedMod, ...],
+) -> tuple[tuple[str, str], ...]:
+    options = list(OPTIONS)
+    options.append(("5", "Write profile files"))
+    if supported:
+        options.append(("6", "Configure a supported mod"))
+    return tuple(options)
+
+
 def run_configure(
     config_path: Path,
     prompt: Prompt = input,
     search: WorkshopSearch | None = None,
+    supported: tuple[SupportedMod, ...] | None = None,
+    start_for_profile: Callable[
+        [Path, str, int, Path], None
+    ] = start_server_for_profile,
 ) -> None:
     if os.name != "nt":
         raise ValueError("DayZ server setup runs on Windows")
     config_path = config_path.resolve()
     if search is None:
         search = bind_workshop_search(config_path.parent, prompt)
+    if supported is None:
+        supported = SUPPORTED_MODS
     config = get_config(config_path)
     destination = Path(config["destination"]).resolve()
     print(f"{config['hostname']} ({destination})")
     while True:
-        for number, label in OPTIONS:
+        for number, label in generate_configure_options(supported):
             print(f"{number}. {label}")
         choice = prompt("Choose an option (blank to finish): ").strip()
         if choice == "":
@@ -63,10 +87,43 @@ def run_configure(
                 rename_server(config_path, prompt)
             elif choice == "4":
                 change_mission(config_path, prompt)
+            elif choice == "5":
+                start_profile_server(config_path, start_for_profile)
+            elif choice == "6" and supported:
+                configure_chosen_mod(config_path, prompt, supported)
             else:
                 print("That option is not in the list.")
         except ValueError as error:
             print(error)
+
+
+def start_profile_server(
+    config_path: Path,
+    start_for_profile: Callable[[Path, str, int, Path], None],
+) -> None:
+    config = get_config(config_path)
+    destination = Path(config["destination"]).resolve()
+    start_for_profile(
+        destination,
+        config["hostname"],
+        config["port"],
+        destination / config["profileDir"],
+    )
+
+
+def configure_chosen_mod(
+    config_path: Path,
+    prompt: Prompt,
+    supported: tuple[SupportedMod, ...],
+) -> None:
+    config = get_config(config_path)
+    destination = Path(config["destination"]).resolve()
+    configure_supported_mod(
+        prompt,
+        destination / config["profileDir"],
+        config["steamId"],
+        supported,
+    )
 
 
 def get_missions(destination: Path) -> list[str]:
@@ -172,6 +229,7 @@ def change_mission(config_path: Path, prompt: Prompt) -> None:
     config["mission"] = mission
     write_config(config_path, config)
     rewrite_launch_files(config_path, write_cfg=True, write_bat=False)
+    write_login_logout_times(destination, mission)
 
 
 def ask_mod_side(prompt: Prompt) -> ModList:

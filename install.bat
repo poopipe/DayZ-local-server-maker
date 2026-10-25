@@ -1,5 +1,5 @@
 @echo off
-cd /d "%~dp0\.."
+cd /d "%~dp0"
 python -m venv .venv
 .venv\Scripts\python.exe -m pip install -e .
 pause

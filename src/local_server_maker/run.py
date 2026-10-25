@@ -12,11 +12,15 @@ from local_server_maker.config import (
     require_steam_username,
 )
 from local_server_maker.configure_bat import generate_configure_bat
+from local_server_maker.globals_xml import write_login_logout_times
 from local_server_maker.update_bat import generate_update_bat
 from local_server_maker.links import get_mod_directory_name, place_mod
 from local_server_maker.mod_path import generate_mod_directory
 from local_server_maker.play_bat import check_dayz_client, generate_play_bat
-from local_server_maker.server_cfg import generate_server_cfg
+from local_server_maker.server_cfg import (
+    enable_cfg_gameplay_file,
+    generate_server_cfg,
+)
 from local_server_maker.start_bat import generate_start_bat
 from local_server_maker.steamcmd import (
     download_steamcmd,
@@ -35,6 +39,7 @@ def run(config_path: Path) -> None:
     write_play_bat(destination, config, mod_names)
     write_configure_bat(destination, config_path)
     write_update_bat(destination, config_path)
+    write_login_logout_times(destination, config["mission"])
     if config["launch"]:
         launch_server(destination)
 
@@ -163,7 +168,8 @@ def write_server_cfg(
 ) -> None:
     cfg_path = destination / "serverDZ.cfg"
     if kept is not None:
-        cfg_path.write_bytes(kept)
+        text = enable_cfg_gameplay_file(kept.decode("utf-8-sig"))
+        cfg_path.write_text(text, encoding="utf-8")
         return
     if not cfg_path.is_file():
         raise ValueError("SteamCMD did not write serverDZ.cfg")

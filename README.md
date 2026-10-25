@@ -36,10 +36,16 @@ Run `configure.bat` in the server directory.
 2. Uninstall a mod
 3. Rename
 4. Change the mission
+5. Write profile files
+6. Configure a supported mod
 
 Press Enter to finish. Rename changes the server name shown in the game and in `start.bat`. It does not rename the directory. 
 
 Change the mission picks from that server's `mpmissions` directory.
+
+Write profile files starts this server and stops it after the profile files are written. Close this server first if it is already open.
+
+Configure a supported mod lists Community Online Tools. It writes `PermissionsFramework\Players\<Steam ID>.json` with the admin role. The Steam ID comes from the server config.
 
 
 # Server Update

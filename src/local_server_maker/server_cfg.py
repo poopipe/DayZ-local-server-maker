@@ -12,7 +12,24 @@ def generate_server_cfg(stock: str, config: ServerConfig) -> str:
     text = replace_string(text, "shardId", config["shardId"])
     text = replace_assignment(text, "instanceId", str(config["instanceId"]))
     text = replace_string(text, "template", config["mission"])
-    return text
+    return enable_cfg_gameplay_file(text)
+
+
+def enable_cfg_gameplay_file(text: str) -> str:
+    pattern = re.compile(
+        r"^(\s*enableCfgGameplayFile\s*=\s*)\d+(\s*;)",
+        re.MULTILINE,
+    )
+    updated, count = pattern.subn(r"\g<1>1\2", text, count=1)
+    if count == 1:
+        return updated
+    line = "enableCfgGameplayFile = 1;\n"
+    marker = "class Missions"
+    if marker in text:
+        return text.replace(marker, line + "\n" + marker, 1)
+    if text.endswith("\n"):
+        return text + "\n" + line
+    return text + "\n\n" + line
 
 
 def replace_string(text: str, key: str, value: str) -> str:
