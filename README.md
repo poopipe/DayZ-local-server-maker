@@ -45,7 +45,9 @@ Change the mission picks from that server's `mpmissions` directory.
 
 Write profile files starts this server and stops it after the profile files are written. Close this server first if it is already open.
 
-Configure a supported mod lists Community Online Tools. It writes `PermissionsFramework\Players\<Steam ID>.json` with the admin role. The Steam ID comes from the server config.
+Configure a supported mod lists mods that have a supported post launch configuration step
+Current list:
+- Community Online Tools. assign admin role to the creators steam ID
 
 
 # Server Update
