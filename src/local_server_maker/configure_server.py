@@ -10,10 +10,10 @@ from local_server_maker.config import (
     write_config,
 )
 from local_server_maker.links import (
-    get_mod_folder_name,
+    get_mod_directory_name,
     is_reparse_point,
     list_bikey_names,
-    remove_mod_folder,
+    remove_mod_directory,
 )
 from local_server_maker.mod_path import generate_mod_directory
 from local_server_maker.run import refresh_installed_mods, rewrite_launch_files
@@ -130,18 +130,18 @@ def uninstall_mod(config_path: Path, prompt: Prompt) -> None:
     source = generate_mod_directory(
         picked["entry"], destination, config["dayzAppId"]
     )
-    folder_name = ""
+    directory_name = ""
     try:
-        folder_name = get_mod_folder_name(source)
+        directory_name = get_mod_directory_name(source)
     except ValueError as error:
         print(error)
     entries = config["mods"] if picked["side"] == "mods" else config["serverMods"]
     entries.remove(picked["entry"])
     write_config(config_path, config)
-    if folder_name != "":
-        installed = destination / f"@{folder_name}"
+    if directory_name != "":
+        installed = destination / f"@{directory_name}"
         if installed.exists() or is_reparse_point(installed):
-            remove_mod_folder(installed)
+            remove_mod_directory(installed)
         remaining = config["mods"] + config["serverMods"]
         remove_unused_bikeys(
             destination, source, remaining, config["dayzAppId"]

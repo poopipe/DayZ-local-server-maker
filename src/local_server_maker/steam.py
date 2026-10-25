@@ -9,5 +9,5 @@ def get_mod_name(meta_text: str) -> str:
         raise ValueError("meta.cpp has no name")
     name = match.group(1)
     if any(char in name for char in '\\/:"*?<>|;'):
-        raise ValueError(f"mod name cannot be used as a folder name: {name}")
+        raise ValueError(f"mod name cannot be used as a directory name: {name}")
     return name

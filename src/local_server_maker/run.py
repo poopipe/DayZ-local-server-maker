@@ -12,7 +12,7 @@ from local_server_maker.config import (
     require_steam_username,
 )
 from local_server_maker.configure_bat import generate_configure_bat
-from local_server_maker.links import get_mod_folder_name, place_mod
+from local_server_maker.links import get_mod_directory_name, place_mod
 from local_server_maker.mod_path import generate_mod_directory
 from local_server_maker.play_bat import check_dayz_client, generate_play_bat
 from local_server_maker.server_cfg import generate_server_cfg
@@ -74,10 +74,10 @@ def rewrite_launch_files(
     if write_cfg:
         write_server_cfg(destination, config, None)
     if write_bat:
-        mod_names = mod_folder_names(
+        mod_names = mod_directory_names(
             destination, config["mods"], config["dayzAppId"]
         )
-        server_mod_names = mod_folder_names(
+        server_mod_names = mod_directory_names(
             destination, config["serverMods"], config["dayzAppId"]
         )
         write_start_bat(
@@ -138,11 +138,11 @@ def place_mods(
     return names
 
 
-def mod_folder_names(
+def mod_directory_names(
     destination: Path, entries: list[ModEntry], dayz_app_id: str
 ) -> list[str]:
     return [
-        get_mod_folder_name(generate_mod_directory(entry, destination, dayz_app_id))
+        get_mod_directory_name(generate_mod_directory(entry, destination, dayz_app_id))
         for entry in entries
     ]
 

@@ -123,16 +123,16 @@ def server_lines(hostname: str, port: int) -> list[str]:
 
 
 def newest_log_lines(profile_dir: str) -> list[str]:
-    folder = f"%~dp0{profile_dir}\\"
+    directory = f"%~dp0{profile_dir}\\"
     listed = (
         'for /f "delims=" %%F in ('
-        f'\'dir /b /o-d "{folder}DayZServer_x64_*.RPT" 2^>nul\') do ('
+        f'\'dir /b /o-d "{directory}DayZServer_x64_*.RPT" 2^>nul\') do ('
     )
     return [
         ":newest_log",
         'set "NEWLOG="',
         listed,
-        f'  set "NEWLOG={folder}%%F"',
+        f'  set "NEWLOG={directory}%%F"',
         "  goto :eof",
         ")",
         "goto :eof",

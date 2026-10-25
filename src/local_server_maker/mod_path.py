@@ -9,7 +9,7 @@ def generate_mod_directory(
     if entry["path"] != "":
         return Path(entry["path"])
     if entry["id"] == "":
-        raise ValueError("mod entry has no workshop id or folder")
+        raise ValueError("mod entry has no workshop id or directory")
     return (
         destination
         / "steamapps"

@@ -5,15 +5,19 @@ from local_server_maker.config import ModEntry, ServerConfig
 from local_server_maker.consts import DAYZ_APP_ID, SERVER_APP_ID
 from local_server_maker.play_bat import check_dayz_client
 from local_server_maker.steam_id import get_saved_steam_id, is_steam64, save_steam_id
-from local_server_maker.workshop import WorkshopItem, WorkshopSearch, ask_pick
+from local_server_maker.workshop import (
+    WorkshopItem,
+    WorkshopSearch,
+    ask_pick,
+    ask_steam_web_api_key,
+)
 
 
 def build_server_config(
     prompt: Prompt, search: WorkshopSearch, settings_dir: Path | None = None
 ) -> ServerConfig:
-    folder = ask_required(prompt, "Server folder")
-    hostname = ask_text(prompt, "Server name", Path(folder).name)
-    mission = ask_text(prompt, "Mission", "dayzOffline.chernarusplus")
+    directory = ask_required(prompt, "Server directory")
+    hostname = ask_text(prompt, "Server name", Path(directory).name)
     port = ask_number(prompt, "Port", 2302)
     max_players = ask_number(prompt, "Max players", 10)
     password = ask_text(prompt, "Join password", "")
@@ -23,6 +27,8 @@ def build_server_config(
     shard_id = ask_text(prompt, "Shard id", "local1")
     username = ask_required(prompt, "Steam account name")
     steam_id = ask_steam_id(prompt, settings_dir, username)
+    if settings_dir is not None:
+        ask_steam_web_api_key(settings_dir, prompt)
     dayz_client = ask_dayz_client(prompt)
     mods = collect_mods(prompt, search, "Client")
     server_mods = collect_mods(prompt, search, "Server")
@@ -33,12 +39,12 @@ def build_server_config(
         "dayzClient": dayz_client,
         "dayzAppId": DAYZ_APP_ID,
         "serverAppId": SERVER_APP_ID,
-        "destination": folder,
+        "destination": directory,
         "hostname": hostname,
         "port": port,
         "cpuCount": cpu_count,
         "profileDir": "profile",
-        "mission": mission,
+        "mission": "dayzOffline.chernarusplus",
         "password": password,
         "passwordAdmin": password_admin,
         "maxPlayers": max_players,
@@ -82,9 +88,9 @@ def search_mods(search: WorkshopSearch, name: str) -> list[WorkshopItem] | None:
 
 def ask_dayz_client(prompt: Prompt) -> str:
     while True:
-        answer = prompt("DayZ client folder: ").strip()
+        answer = prompt("DayZ client directory: ").strip()
         if answer == "":
-            print("DayZ client folder is required")
+            print("DayZ client directory is required")
             continue
         message = check_dayz_client(answer)
         if message != "":
