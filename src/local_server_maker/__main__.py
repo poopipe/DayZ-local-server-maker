@@ -6,17 +6,11 @@ from local_server_maker.config import save_server_config
 from local_server_maker.configure_server import run_configure
 from local_server_maker.run import run
 from local_server_maker.new_server import build_server_config
-from local_server_maker.workshop import bind_workshop_search
 
 
-def run_setup(config_path: Path) -> None:
-    if config_path.exists():
-        raise ValueError(f"{config_path} already exists")
-    config = build_server_config(
-        input,
-        bind_workshop_search(config_path.parent, input),
-        config_path.parent,
-    )
+def run_setup() -> None:
+    config = build_server_config(input)
+    config_path = Path(config["destination"]) / "config.json"
     save_server_config(config_path, config)
     run(config_path)
 
@@ -26,15 +20,14 @@ def argument_parser() -> argparse.ArgumentParser:
         prog="python -m local_server_maker",
         usage=(
             "%(prog)s CONFIG.json\n"
-            "       %(prog)s new_server CONFIG.json\n"
+            "       %(prog)s new_server\n"
             "       %(prog)s configure_server CONFIG.json"
         ),
     )
     commands = parser.add_subparsers(dest="command", required=True)
     install = commands.add_parser("run")
     install.add_argument("config", type=Path)
-    new_server = commands.add_parser("new_server")
-    new_server.add_argument("config", type=Path)
+    commands.add_parser("new_server")
     configure_server = commands.add_parser("configure_server")
     configure_server.add_argument("config", type=Path)
     return parser
@@ -47,10 +40,11 @@ def main(argv: list[str] | None = None) -> None:
         arguments = ["run", *arguments]
     try:
         parsed = argument_parser().parse_args(arguments)
-        config = Path(parsed.config)
         if parsed.command == "new_server":
-            run_setup(config)
-        elif parsed.command == "configure_server":
+            run_setup()
+            return
+        config = Path(parsed.config)
+        if parsed.command == "configure_server":
             run_configure(config)
         else:
             run(config)

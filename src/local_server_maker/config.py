@@ -110,10 +110,18 @@ def get_config(path: Path) -> ServerConfig:
     return config
 
 
+def project_steamcmd_dir() -> Path:
+    here = Path(__file__).resolve()
+    for parent in here.parents:
+        if (parent / "pyproject.toml").is_file():
+            return (parent / ".steamcmd").resolve()
+    return (Path.cwd() / ".steamcmd").resolve()
+
+
 def generate_steamcmd_dir(config: ServerConfig, config_path: Path) -> Path:
     raw = config["steamCmdDir"]
     if raw == "":
-        return (config_path.parent / ".steamcmd").resolve()
+        return project_steamcmd_dir()
     path = Path(raw)
     if not path.is_absolute():
         path = config_path.parent / path

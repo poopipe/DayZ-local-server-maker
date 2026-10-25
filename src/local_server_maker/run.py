@@ -12,6 +12,7 @@ from local_server_maker.config import (
     require_steam_username,
 )
 from local_server_maker.configure_bat import generate_configure_bat
+from local_server_maker.update_bat import generate_update_bat
 from local_server_maker.links import get_mod_directory_name, place_mod
 from local_server_maker.mod_path import generate_mod_directory
 from local_server_maker.play_bat import check_dayz_client, generate_play_bat
@@ -33,6 +34,7 @@ def run(config_path: Path) -> None:
     write_start_bat(destination, config, mod_names, server_mod_names)
     write_play_bat(destination, config, mod_names)
     write_configure_bat(destination, config_path)
+    write_update_bat(destination, config_path)
     if config["launch"]:
         launch_server(destination)
 
@@ -228,4 +230,11 @@ def write_configure_bat(destination: Path, config_path: Path) -> None:
     bat_path = destination / "configure.bat"
     print(f"Writing {bat_path}")
     text = generate_configure_bat(sys.executable, str(config_path.resolve()))
+    bat_path.write_text(text, encoding="utf-8", newline="\r\n")
+
+
+def write_update_bat(destination: Path, config_path: Path) -> None:
+    bat_path = destination / "update.bat"
+    print(f"Writing {bat_path}")
+    text = generate_update_bat(sys.executable, str(config_path.resolve()))
     bat_path.write_text(text, encoding="utf-8", newline="\r\n")

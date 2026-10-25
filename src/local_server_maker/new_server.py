@@ -10,14 +10,22 @@ from local_server_maker.workshop import (
     WorkshopSearch,
     ask_pick,
     ask_steam_web_api_key,
+    bind_workshop_search,
 )
 
 
 def build_server_config(
-    prompt: Prompt, search: WorkshopSearch, settings_dir: Path | None = None
+    prompt: Prompt, search: WorkshopSearch | None = None
 ) -> ServerConfig:
     directory = ask_required(prompt, "Server directory")
-    hostname = ask_text(prompt, "Server name", Path(directory).name)
+    server_dir = Path(directory)
+    config_path = server_dir / "config.json"
+    if config_path.exists():
+        raise ValueError(f"{config_path} already exists")
+    server_dir.mkdir(parents=True, exist_ok=True)
+    if search is None:
+        search = bind_workshop_search(server_dir, prompt)
+    hostname = ask_text(prompt, "Server name", server_dir.name)
     port = ask_number(prompt, "Port", 2302)
     max_players = ask_number(prompt, "Max players", 10)
     password = ask_text(prompt, "Join password", "")
@@ -26,9 +34,8 @@ def build_server_config(
     instance_id = ask_number(prompt, "Instance id", 2)
     shard_id = ask_text(prompt, "Shard id", "local1")
     username = ask_required(prompt, "Steam account name")
-    steam_id = ask_steam_id(prompt, settings_dir, username)
-    if settings_dir is not None:
-        ask_steam_web_api_key(settings_dir, prompt)
+    steam_id = ask_steam_id(prompt, server_dir, username)
+    ask_steam_web_api_key(server_dir, prompt)
     dayz_client = ask_dayz_client(prompt)
     mods = collect_mods(prompt, search, "Client")
     server_mods = collect_mods(prompt, search, "Server")
