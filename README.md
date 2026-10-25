@@ -57,7 +57,7 @@ Because this tool uses SteamCmd it will log you out of your active steam client 
 If Steam is not signed in, it restarts Steam and waits - you may be prompted by Steam to login. 
 If the server is not already running, it will be started.
 
-This .bat file is not 100% reliable. If you encounter and authloginstate error after running it, manually restart your steam client and try again
+This .bat file is not 100% reliable. If you encounter authloginstate error after running it, manually restart your steam client and try again
 
 
 
