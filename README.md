@@ -39,14 +39,19 @@ Run `configure.bat` in the server directory.
 5. Write profile files
 6. Configure a supported mod
 
-Press Enter to finish. Rename changes the server name shown in the game and in `start.bat`. It does not rename the directory. 
+Install a mod: search for and install a mod
 
-Change the mission picks from that server's `mpmissions` directory.
+Uninstall a mod: uninstall an installed mod
 
-Write profile files starts this server and stops it after the profile files are written. Close this server first if it is already open.
+Rename: changes the server name shown in the game and in `start.bat`. It does not rename the directory. 
 
-Configure a supported mod lists mods that have a supported post launch configuration step
-Current list:
+Change the mission: picks from that server's `mpmissions` directory.
+
+Write profile files: starts this server and stops it after the profile files are written. Close this server first if it is already open.
+
+Configure a supported mod: lists mods that have a supported post launch configuration step
+
+Current supported mods:
 - Community Online Tools. assign admin role to the creators steam ID
 
 
