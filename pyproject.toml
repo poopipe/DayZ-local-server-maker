@@ -1,0 +1,27 @@
+[project]
+name = "local-server-maker"
+version = "0.1.0"
+description = "Create and update a local DayZ server from a JSON file"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+local-server-maker = "local_server_maker.__main__:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]
+
+[tool.pyright]
+pythonVersion = "3.10"
+typeCheckingMode = "basic"
+venvPath = "."
+venv = ".venv"
+include = ["src", "tests"]

@@ -1,0 +1,13 @@
+.venv/
+.steamcmd/
+.steam-web-api-key
+scripts/steamapikey.txt
+.steam-id
+config.json
+config.example.json
+tests/
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
